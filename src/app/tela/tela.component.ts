@@ -175,7 +175,6 @@ export class TelaComponent {
   });
 
   public formAltera = this.formB.group({
-
     "NumOS": [0, Validators.required],
     "Chamado": [0, Validators.required],
     "DataRecebe": [0, Validators.required],
