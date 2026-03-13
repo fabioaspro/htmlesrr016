@@ -5,11 +5,15 @@ import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, viewChild,
 import { RouterOutlet, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators, FormControl } from '@angular/forms';
-import { PoUploadComponent, PoModule, PoUploadFile, PoTableColumn, PoTableModule, PoButtonModule, PoMenuItem, PoMenuModule, PoModalModule, PoPageModule, PoToolbarModule, PoTableAction, PoModalAction, PoDialogService, PoNotificationService, PoFieldModule, PoDividerModule, PoTableLiterals, PoTableComponent, PoUploadLiterals, PoModalComponent, PoInputComponent, } from '@po-ui/ng-components';
+import { PoUploadComponent, PoModule, PoUploadFile, PoTableColumn, PoTableModule, PoButtonModule, PoMenuItem, PoMenuModule, PoModalModule, PoPageModule, PoToolbarModule, PoTableAction, PoModalAction, PoDialogService, PoNotificationService, PoFieldModule, PoDividerModule, PoTableLiterals, PoTableComponent, PoUploadLiterals, PoModalComponent, PoInputComponent, PoLookupColumn, PoLookupFilter, PoAccordionComponent, PoAccordionItemComponent, } from '@po-ui/ng-components';
 import { ServerTotvsService } from '../services/server-totvs.service';
+import { TecLabLookupService } from '../services/header-lookup.service';
 import { ExcelService } from '../services/excel-service.service';
 import { environment } from '../environments/environment'
 import { DnRangeComponent } from '../dn-range/dn-range.component';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-tela',
@@ -37,6 +41,7 @@ import { DnRangeComponent } from '../dn-range/dn-range.component';
 
 export class TelaComponent {
 
+  private srvheader = inject(TecLabLookupService)
   private srvTotvs = inject(ServerTotvsService);
   private srvNotification = inject(PoNotificationService);
   private srvExcel = inject(ExcelService);
@@ -52,20 +57,55 @@ export class TelaComponent {
   dtFim: string = ''
   labelLoadTela: string = ''
   loadTela: boolean = false
-  loadDadosError: boolean = false
+  loadDadosItens: boolean = false
   loadExcel: boolean = false
   tituloTela!: string
   mudaCampos!: number | null
   pesquisa!: string
   nomeBotao: any;
   lBotao: boolean = false
-  alturaGrid: number = window.innerHeight - 410
-  alturaGridRPD: number = window.innerHeight - this.alturaGrid - 290
+  lPaleta: boolean = true
+  alturaGrid: number = window.innerHeight - 850
+  alturaGridRPD: number = window.innerHeight - this.alturaGrid - 700
   alturaError: number = window.innerHeight - this.alturaGrid - 290
   objSelecionado:any
   lDisable: boolean = false
   idBatch!: number | null
+ 
+  //_url!: PoLookupFilter
+  //_url = this.srvTotvs.ObterTecLab()
 
+  //headersTotvs = environment.headersTotvsI
+ /* 
+  */
+  
+  TecLabService = this.srvheader
+  
+   /*
+  //Para não fixar a URL
+  _url =  + "/ObterTecLab" + this.headersTotvs  
+
+  ////////////////////
+  private apiUrl = 'url_do_seu_servico';
+
+   
+
+    headersTotvs = environment.headersTotvsI
+
+    constructor(private http: HttpClient) {}
+
+    getFilteredData(params: any): Observable<any> {
+      const httpOptions = {
+        headers: new HttpHeaders(this.headersTotvs),
+        params: params
+      };
+      return this.http.get(this.apiUrl, httpOptions);
+    }
+  */
+
+  //////////////////////////
+  //  (`${this._url}/ObterLeave`, params, {headers:headersTotvs})
+  
   //paginação do grid
   itensPaginados = []
   page = 1
@@ -113,23 +153,35 @@ export class TelaComponent {
   tipoAcao: string = ''
   @ViewChild('poTable') poTable!: PoTableComponent;
   @ViewChild('upload') poUpload!: PoUploadComponent;
-  @ViewChild('ttDadosIntegra') GridIntegraDados!: PoTableComponent;
+  @ViewChild('ttDadosConc') GridConclusao!: PoTableComponent;
   @ViewChild('telaAltera', { static: true }) telaAltera:  | PoModalComponent  | undefined;
   @ViewChild('telaFiltroAvancado', { static: true }) telaFiltroAvancado:  | PoModalComponent  | undefined;
 
   @ViewChild('cScan') cScanInput:PoInputComponent | undefined;
   @ViewChild('cEstabel') cEstabelInput:PoInputComponent | undefined;
 
-  //Para não fixar a URL
-  _url = environment.totvs_url + "/addFiles";
+  @ViewChild('dconclusao') dconclusao!:PoAccordionItemComponent;
+  @ViewChild('drpd') drpd!:PoAccordionItemComponent;
+
+  @ViewChild(PoAccordionComponent, { static: true })  reparo!: PoAccordionComponent;
+  @ViewChild(PoAccordionItemComponent, { static: true }) dreparo1!: PoAccordionItemComponent;
+  @ViewChild(PoAccordionItemComponent, { static: true }) dreparo2!: PoAccordionItemComponent;
+  @ViewChild(PoAccordionComponent, { static: true })  conclusao!: PoAccordionComponent;
+  //@ViewChild(PoAccordionItemComponent, { static: true }) dconclusao!: PoAccordionItemComponent;
+  @ViewChild(PoAccordionComponent, { static: true })  rpd!: PoAccordionComponent;
+  //@ViewChild(PoAccordionItemComponent, { static: true }) drpd!: PoAccordionItemComponent;
 
   //---Grid
   colunas!: PoTableColumn[]
   lista!: any[]
   itCodigo!: any
 
-  colunasError!: PoTableColumn[]
-  listaError!: any[]
+  colunasItens!: PoTableColumn[]
+  listaItens!: any[]
+
+  dtAtual!: Date
+  hrAtual!: any
+  hrFim!: any
 
   customLiteralsupload: PoUploadLiterals = {
     dragFilesHere: 'Arraste o Arquivo aqui',
@@ -146,6 +198,11 @@ export class TelaComponent {
     loadingData: 'Buscar '
   };
 
+
+  public readonly columnsTecLab: Array<PoLookupColumn> = [
+    { property: 'nickname', label: 'Hero' },
+    { property: 'name', label: 'Name' }
+  ];
   //Formulario
   /*public form = this.formImport.group({
     //let hoje = new Date()
@@ -171,10 +228,29 @@ export class TelaComponent {
   });
 
   public formRPD = this.formImport.group({
-    camporpd: ['', Validators.required],
+    "camporpd": [''],
+    "TecLab": [''],
+    "descTec": [''],
+    "DtIniRep": ['', Validators.required],
+    "HrIniRep": ['', Validators.required],
+    "HrFimRep": ['', Validators.required],
+    "DefC": ['', Validators.required],
+    "descDef": [''],
+    "Causa": ['', Validators.required],
+    "descCausa": [''],
+    "Sol1": ['', Validators.required],
+    "descSol1": [''],
+    "Sol2": ['', Validators.required],
+    "descSol2": [''],
+    "Alimentador": [''],
+    "descAli": [''],
   });
 
   public formAltera = this.formB.group({
+    "codEstabel": [0, Validators.required],
+    "codFilial": [0, Validators.required],
+    "numRR": [0, Validators.required],
+    "numSerieIt": [0, Validators.required],
     "NumOS": [0, Validators.required],
     "Chamado": [0, Validators.required],
     "DataRecebe": [0, Validators.required],
@@ -182,27 +258,62 @@ export class TelaComponent {
     "itCodigo": [0, Validators.required],
     "descItem": [0, Validators.required],
     "camporpd": [0, Validators.required],
+    "DefInd": [0, Validators.required],
+    "descDefInd": [0, Validators.required],
+    "nTecnico": [0, Validators.required],
+    "descTec": [0, Validators.required],
+    "Lab": [0, Validators.required],
+    "Sit": [0, Validators.required],
+    "Bloq": [0, Validators.required],
+    "Obs": [0, Validators.required],
   });
+
+
+  fieldFormat(value: any) {
+    return `${value.CodEmitente} - ${value.NomeAbrev}`;
+  }
 
 
   //CONCLUSAO DE REPARO
   ngOnInit(): void {
 
+    console.log("FAS:",this.TecLabService)
     //Colunas do grid
-    this.colunas      = this.srvTotvs.obterColunasEsaa052()
-    this.colunasError = this.srvTotvs.obterColunasErrorEsaa052()
-    
+    this.colunas      = this.srvTotvs.obterColunasRPD()
+    this.colunasItens = this.srvTotvs.obterColunasItens()
+    this.desabilitaFormRPD()
+
     this.mudaCampos = 1 //iniciar a variavel
     this.form.controls['tpBusca'].setValue(this.mudaCampos)
     this.onChangetpBusca(this.mudaCampos)
     
+    //this.rpd.expandAllItems()
+    //this.item1.expand();
+    this.dreparo1.expand();
+
+  }
+
+  public desabilitaFormRPD() {
+
+    this.formRPD.disable()
+  
+  }
+  
+  public habilitaFormRPD() {
+
+    this.formRPD.enable()
+
   }
 
   ChamaObterDadosReparo() {
 
     this.labelLoadTela = "Procurando Reparo"
-    this.loadTela = true;
-    this.desabilitaForm()
+    
+    this.loadTela = true
+    this.loadDadosItens = true
+    this.lBotao = true
+
+    this.desabilitaFormRPD()
 
     this.onChangetpBusca(0)
 
@@ -212,18 +323,43 @@ export class TelaComponent {
     this.srvTotvs.ObterDadosReparo(paramsTela).subscribe({
       next: (response: any) => {
         
-        this.srvNotification.success('Dados listados com sucesso !')
-        console.log(response.items)
+        //this.srvNotification.success('Dados listados com sucesso !')
+        
         this.formAltera.patchValue(response.items[0])
         
-        this.loadTela = false
-        this.habilitaForm()
+        this.loadTela       = false
+        this.loadDadosItens = false
         
+
+        this.lista      = response.rpd
+        this.listaItens = response.itensrpd
+
+        this.form.disable()
+        this.lBotao  = true
+        this.lPaleta = false
+        this.habilitaFormRPD()
+
+        this.DtHrAtual()
+        
+        /*this.conclusao.poAccordionItems.forEach((x) =>
+          x.label === 'Dados do Reparo' || x.label === 'RPD'
+            ? x.expand()
+            : x.collapse()
+            
+        )*/
+        
+        this.dconclusao.expanded = true
+        this.drpd.expanded = true
+
       },
       error: (e) => {
         this.srvNotification.error('Ocorreu um erro ObterDadosReparo: ' + e)
         this.loadTela = false
-        this.habilitaForm()
+        this.loadDadosItens = false
+        this.lBotao = false
+        this.desabilitaFormRPD()
+        this.habilitaFormRPD()
+        //this.DtHrAtual()
       },
     }) 
 
@@ -240,6 +376,101 @@ export class TelaComponent {
       setTimeout(() => this.cEstabelInput?.focus(), 0)
     }
 
+  }
+
+  leaveCampo(nomeCampo: string){
+
+    const valorTecLab = this.formRPD.get(nomeCampo)?.value
+
+    console.log(`Campo: ${nomeCampo}`, valorTecLab)
+
+    let paramsTela: any = {items: { cCampo: `${nomeCampo}`, cValor: valorTecLab }}
+    
+    //Chamar o servico
+    this.srvTotvs.ObterLeave(paramsTela).subscribe({
+      next: (response: any) => {        
+
+          this.formRPD.controls['descTec'].setValue(response.cLeave)
+      },
+      error: (e) => {
+        
+      },
+    })
+
+  }
+
+  onCancelar(){
+
+    this.formAltera.reset()
+    this.formRPD.reset()
+    this.lista = []
+    this.listaItens = []
+    this.form.enable()
+    this.formRPD.disable()
+    this.lBotao = false
+    this.lPaleta = true
+    this.mudaCampos = 1 //iniciar a variavel
+    this.form.controls['tpBusca'].setValue(this.mudaCampos)
+    this.onChangetpBusca(this.mudaCampos)
+
+    this.dconclusao.expanded = false
+    this.drpd.expanded = false
+
+  }
+
+  onConcluir(){
+
+    if (this.formRPD.valid){
+      alert("ok")
+      this.onCancelar()
+
+    }
+    else {
+      Object.keys(this.formRPD.controls).forEach(field => {
+        const control = this.formRPD.get(field)
+        control?.markAsTouched()
+
+        if (control?.invalid && control.errors?.['required']) {
+
+          
+          let nomeCampo = this.getNomeCampo(field)
+          this.srvNotification.error('Preencher todos os campos antes de Concluir : ' + nomeCampo)
+
+        }
+
+      })
+
+    }
+
+  }
+
+  getNomeCampo (campo: string){
+    const nomes: any = {
+
+      TecLab: 'Técnico LAB',
+      DtIniRep: 'Data Ini Rep',
+      HrIniRep: 'Hora Ini Rep',
+      HrFimRep: "Hora Fim Rep",
+      DefC: "Defeito Const",
+      Causa: "Causa",
+      Sol1: "Solução 1",
+      Sol2: "Solução 2",  
+    }
+    return nomes[campo] || campo
+
+  }
+
+  //Funcao 
+  public DtHrAtual() {
+    let hoje = new Date()
+    let hora = hoje.getHours()
+    let minu = hoje.getMinutes()
+    let toDate = new Date()
+
+    this.dtAtual = toDate;
+
+    this.hrAtual = `${hora}:${minu}`
+    this.hrFim   = `${hora}:${minu + 1}`
   }
 
   /*
@@ -343,8 +574,8 @@ export class TelaComponent {
 
   ChamaObterDadosErrorEsaa052(iId: any){
 
-    this.loadDadosError = true
-    this.desabilitaForm()
+    this.loadDadosItens = true
+    this.desabilitaFormRPD()
     let paramsID: any = { items: {idBatch: iId } }
 
     //Chamar o servico
@@ -352,16 +583,16 @@ export class TelaComponent {
     this.srvTotvs.ObterDadosErrorEsaa052(paramsID).subscribe({
       next: (response: any) => {
         //this.srvNotification.success('Erros listados com sucesso !')
-        this.loadDadosError = false
-        this.listaError = response.items
+        this.loadDadosItens = false
+        this.listaItens = response.items
         //this.listaError.sort(this.srvTotvs.ordenarCampos(['idBatch']))        
         
-        this.habilitaForm()
+        this.habilitaFormRPD()
       },
       error: (e) => {
         this.srvNotification.error('Ocorreu um erro ObterDados: ' + e)
-        this.loadDadosError = false
-        this.habilitaForm()
+        this.loadDadosItens = false
+        this.habilitaFormRPD()
       },
     }) 
   }
@@ -370,7 +601,7 @@ export class TelaComponent {
 
     this.labelLoadTela = "Carregando Dados..."
     this.loadTela = true
-    this.desabilitaForm()
+    this.habilitaFormRPD()
     let paramsTela: any = { items: this.form.value }
 
     //Chamar o servico
@@ -381,13 +612,13 @@ export class TelaComponent {
         this.lista = response.items        
         this.lista.sort(this.srvTotvs.ordenarCampos(['DtHrInc']))        
         this.loadTela = false
-        this.habilitaForm()
+        this.habilitaFormRPD()
         this.ChamaObterDadosErrorEsaa052(this.lista[0].idBatch)
       },
       error: (e) => {
         //this.srvNotification.error('Ocorreu um erro ObterDados: ' + e)
         this.loadTela = false
-        this.habilitaForm()
+        this.habilitaFormRPD()
       },
     })
   }
@@ -432,7 +663,7 @@ export class TelaComponent {
 
     this.labelLoadTela = "Carregando Dados"
     this.loadTela = true
-    this.desabilitaForm()
+    this.desabilitaFormRPD()
     let paramsTela: any = { items: this.form.value, filtro: this.filtro, page: this.page, pageSize: this.pageSize }
     
     this.srvTotvs.ObterDadosPagEsaa052(paramsTela).subscribe({
@@ -440,7 +671,7 @@ export class TelaComponent {
         
         //this.srvNotification.success('Dados listados com sucesso !')
         this.loadTela = false
-        this.habilitaForm()
+        this.habilitaFormRPD()
         if (response.total === 0) return
 
         //this.lista = response.items
@@ -465,34 +696,16 @@ export class TelaComponent {
       error: (e) => {
         //this.srvNotification.error('Ocorreu um erro ObterDadosPag: ' + e)
         this.loadTela = false
-        this.habilitaForm()
+        this.habilitaFormRPD()
       },
     })
   }
 
-  public habilitaForm() {
-
-    this.lBotao = false
-    //this.form.controls['tpBusca'].enable()
-
-    //this.form.controls['codEstabel'].enable()
-    //this.form.controls['codFilial'].enable()
-    //this.form.controls['numRR'].enable()
-    //this.form.controls['itCodigo'].enable()
-  }
+  
 
   OnSeleciona(event: any): void {}
   
-  public desabilitaForm() {
-
-    this.lBotao = true
-    //this.form.controls['tpBusca'].disable()
-
-    //this.form.controls['codEstabel'].disable()
-    //this.form.controls['codFilial'].disable()
-    //this.form.controls['numRR'].disable()
-    //this.form.controls['itCodigo'].disable()
-  }
+  
 
   onOracle() {
 
@@ -582,9 +795,9 @@ export class TelaComponent {
   onEfetivarArquivo() {
 
     //Pega os registros selecionados
-    let registrosSelecionados = this.GridIntegraDados.getSelectedRows()
+    let registrosSelecionados = this.GridConclusao.getSelectedRows()
 
-    if (this.GridIntegraDados.getSelectedRows().length > 0) {
+    if (this.GridConclusao.getSelectedRows().length > 0) {
 
       this.loadTela = true
       this.labelLoadTela = "Efetivando Arquivo..."

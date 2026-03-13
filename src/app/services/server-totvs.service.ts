@@ -29,33 +29,27 @@ export class ServerTotvsService {
   }
   
   //------------ Colunas Grid ESAA052
-  obterColunasEsaa052(): Array<PoTableColumn> {
+  obterColunasRPD(): Array<PoTableColumn> {
     return [
-      { property: 'idBatch',       label: "idBatch", type: 'number', visible: false},
-      { property: 'Chave',         label: "Chave", visible: false},
-      { property: 'Integracao',    type:'label', width: '150px',
-        labels: [
-          { value: 'int001', label: 'Envio'      , icon: 'bi bi-send' },
-          { value: 'int002', label: 'Recebimento', icon: 'bi bi-cloud-download'}
-        ]
-      },
-      { property: 'Estab',         label: "Estab"},
-      { property: 'serie',         label: "Série", width: '80px'},
-      { property: 'numOS',         label: "NumOS/Nota"},
-      { property: 'itCodigo',      label: "Item/Tipo"},
-      { property: 'nrEnc',         label: "ENC"},     
-      { property: 'Lote',          label: "Lote"},
-      { property: 'DtHrInc',       label: "DtHrInc",  type:'date', format: "dd/MM/yyyy"},
-      { property: 'DtHrEnv',       label: "DtHrEnv",  type:'date', format: "dd/MM/yyyy"},
-      { property: 'QtdReprocessa', label: "QtdReprocessa", width: '150px'},
-      { property: 'Pendente',      type:'label',
-          labels: [
-            { value: 'true',  textColor: 'white', color: 'color-07', label: 'Pendente' },
-            { value: 'false', textColor: 'white', color: 'color-10', label: 'Enviado' }
-          ]
-        },
-      { property: 'Origem',        label: 'Origem', visible: false}, 
-      
+      { property: 'tecLab',        label: "Técnico LAB"},
+      { property: 'dataRPD',       label: "Data"},
+      { property: 'hrIni',         label: "Hora Ini Rep"},
+      { property: 'hrFim',         label: "Hora Fim Rep"},
+      { property: 'defCons',       label: "Defeito Cons"},
+      { property: 'causa',         label: "Causa"},
+      { property: 'sol1',          label: "Solução 1"},
+      { property: 'sol2',          label: "Solução 2"},
+      { property: 'situacao',      label: "Situação"},
+    ];
+  }
+
+  obterColunasItens(): Array<PoTableColumn> {
+    return [
+      { property: 'Componente',      label: "Componente"},
+      { property: 'Descricao',       label: "Descrição"},
+      { property: 'Local',           label: "Local"},
+      { property: 'Qtde',            label: "Qtde"},
+      { property: 'Situacao',        label: "Situação"},
     ];
   }
 
@@ -99,6 +93,11 @@ export class ServerTotvsService {
     ];
   }
   //---------------------- Obter Lista Completa
+  public ObterTecLab(params?: any){
+    return this.http.post(`${this._url}/addFiles`, params, {headers:headersTotvs}).pipe(take(1))
+  }
+
+  //---------------------- Obter Lista Completa
   public UpdloadArquivo(params?: any){
     return this.http.post(`${this._url}/addFiles`, params, {headers:headersTotvs}).pipe(take(1))
   }
@@ -113,6 +112,11 @@ export class ServerTotvsService {
     return this.http.get(`${this._url}/ObterArquivo`, {params:params, headers:headersTotvs}).pipe(take(1));
   }
 
+  
+  //---------------------- Obter Lista Completa
+  public ObterLeave(params?: any){
+    return this.http.post(`${this._url}/ObterLeave`, params, {headers:headersTotvs}).pipe(take(1))
+  }
   //---------------------- Obter Lista Completa
   public ObterDadosReparo(params?: any){
     return this.http.post(`${this._url}/ObterDadosReparo`, params, {headers:headersTotvs}).pipe(take(1))

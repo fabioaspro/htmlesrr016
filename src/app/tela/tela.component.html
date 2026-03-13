@@ -1,4 +1,4 @@
-<po-toolbar p-title="CONCLUSÃO DE REPAROS"></po-toolbar>
+<po-toolbar p-title="CONCLUSÃO DE REPAROS (ESRR016)"></po-toolbar>
 <div class="cabec" >
     <div class="tipoBusca">
       <form [formGroup]="form">
@@ -8,7 +8,7 @@
                         [p-columns]=2 
                         p-label="Tipo de Busca"
                         [p-options]="[
-                          { label: 'Cod.Barras  _', value: 1},
+                          { label: 'Cod.Barras', value: 1},
                           { label: 'Reparo', value: 2}
                         ]"
                         (p-change)="changeBusca($event)"
@@ -33,127 +33,188 @@
     </div>
     
     <div class="campofiltrosc">
+        <po-button p-tooltip="Concluir Reparo"  p-icon="bi bi-wrench"  p-label="Concluir Reparo" [p-disabled]="lPaleta" (p-click)="this.onConcluir()" p-kind="primary"> </po-button>
+        <po-button p-tooltip="Cancelar"  p-icon="bi bi-x-octagon"  p-label="Cancelar" [p-disabled]="lPaleta" (p-click)="this.onCancelar()" > </po-button>
         <!--
         <po-button p-tooltip="Baixar Dados no Excel"  p-icon="bi bi-download"     p-label="Baixar Excel"          (p-click)="this.onExportarExcel()" p-kind="primary"> </po-button>
-        <po-button p-tooltip="Libera Mensal"          p-icon="bi bi-unlock"       p-label="Libera Mensal"         (p-click)="this.onExportarExcel()" p-kind="primary"> </po-button>
         <po-button p-tooltip="Consulta de ENC"        p-icon="bi bi-upc-scan"     p-label="Consulta de ENC"       (p-click)="onConsultaEnc()"        p-danger="true" > </po-button>
         <po-button p-tooltip="Recebimento do ORACLE"  p-icon="bi bi-zoom-in"      p-label="Recebimento do ORACLE" (p-click)="onOracle()"             p-danger="true" > </po-button>
         -->
     </div>
 
   </div>
-  
+
   <div style="display: flex;">
-    
-      <div class="viewer">
-
-        <form [formGroup]="formAltera" class="camporpd">
-          <div style="display: flex; gap: 540px;">            
-            <po-input name="NumOS"   p-readonly="true" formControlName="NumOS"   style="width: 150px;" p-label="NumOS"  ></po-input>
-            <po-input name="Chamado" p-readonly="true" formControlName="Chamado" style="width: 150px;" p-label="Chamado"></po-input>
-          </div>
-          <div style="display: flex; gap: 540px;">            
-            <po-input name="DataRecebe"  p-readonly="true" formControlName="DataRecebe"      style="width: 150px;" p-label="DataRecebe" ></po-input>
-            <po-input name="HoraRecebe"  p-readonly="true" formControlName="HoraRecebe"      style="width: 150px;" p-label="HoraRecebe" p-mask="99:99"></po-input>
-          </div>
-          <div style="display: flex; gap: 10px;">            
-            <po-input name="itCodigo" p-readonly="true" formControlName="itCodigo"      style="width: 150px;" p-label="Item"     ></po-input>
-            <po-input name="descItem" p-readonly="true" formControlName="descItem"      style="width: 680px;" p-label="Descrição"></po-input>
-          </div>
-          <div style="display: flex; gap: 10px;">            
-            <po-input name="defInd"      formControlName="camporpd"      style="width: 120px;" p-label="Def.Indicativo"></po-input>
-            <po-input name="descdefInd"  formControlName="camporpd"      style="width: 710px;" p-label="Descrição"     ></po-input>
-          </div>
-          <div style="display: flex; gap: 10px;">            
-            <po-input name="numTec"      formControlName="camporpd"      style="width: 120px;" p-label="Num.Técnico"></po-input>
-            <po-input name="descnumTec"  formControlName="camporpd"      style="width: 710px;" p-label="Descrição"  ></po-input>
-          </div>
-          <div style="display: flex; gap: 10px;">            
-            <po-input name="lab"       formControlName="camporpd"      style="width: 120px;" p-label="Laboratório"></po-input>
-            <po-input name="situacao"  formControlName="camporpd"      style="width: 120px;" p-label="Situacao"   ></po-input>
-            <po-checkbox style="margin-top: 35px" name="bloqueado" p-label="Bloqueado"> </po-checkbox>
-          </div>
-          <div style="display: flex; gap: 10px;">
-            <po-textarea name="content" p-label="Observação" class="po-md-12"> </po-textarea>
-          </div>
-        </form>
-      </div>
-
-      <div class="viewerRPD">
-
-        <div style="display: flex; ">
-          <form [formGroup]="formRPD" class="camporpd">
-            
-            <div style="display: flex; gap: 50px;">
-              <po-input name="NumOS"       formControlName="camporpd" style="width: 120px;" p-label="Técnico LAB" ></po-input>
-              <po-input name="Chamado"     formControlName="camporpd" style="width: 120px;" p-label="Data Ini Rep"></po-input>
-              <po-input name="DataRecebe"  formControlName="camporpd" style="width: 120px;" p-label="Hora Ini Rep"></po-input>
-              <po-input name="HoraRecebe"  formControlName="camporpd" style="width: 120px;" p-label="Hora Fim Rep"></po-input>
-            </div>
-            <po-input name="DefC"        formControlName="camporpd"      style="width: 120px;" p-label="Defeito Const"></po-input>
-            <po-input name="HoraRecebe"  formControlName="camporpd"      style="width: 120px;" p-label="Causa"        ></po-input>
-            <po-input name="HoraRecebe"  formControlName="camporpd"      style="width: 120px;" p-label="Solução1"     ></po-input>
-            <po-input name="HoraRecebe"  formControlName="camporpd"      style="width: 120px;" p-label="Solução2"     ></po-input>
-            <po-input name="HoraRecebe"  formControlName="camporpd"      style="width: 120px;" p-label="Alimentador"  ></po-input>
-          
-          <po-table #ttDadosRPD
-                  [p-items]="listaError" 
-                  [p-columns]="colunasError"
-                  [p-striped]="true" 
-                  p-sort="true"
-                  [p-sort]="true"
-                  [p-hide-table-search]="true" 
-                  [p-hide-columns-manager]="true" 
-                  p-container="true"
-                  [p-single-select]="true"
-                  [p-selectable]="false"
-                  [p-literals]="customLiterals"
-                  [p-height]="alturaGridRPD" 
-                  [p-loading]="loadDadosError">
-          </po-table>
-          </form>
-        </div>
-      </div>
-  </div>
-
-  <div class="grid">
-      <!--<po-loading-overlay *ngIf="loadTela===true" [p-text]="labelLoadTela" [p-screen-lock]="true"></po-loading-overlay>-->
-      <!--<p style="font-size: 20px; font-weight: bold"><po-divider p-label="DADOS IMPORTADOS DO ARQUIVO"></po-divider></p>-->
-      <p style="font-size: 15px; font-weight: bold; margin-bottom: -40px;">Total de Registros: {{this.total}}</p>
-      <p style="font-size: 15px; display: flex; justify-content: flex-end; margin-right: 260px; margin-bottom: -52px;">
-        
-        <po-button  p-tooltip="Pesquisa Avançada"  p-icon="bi bi-funnel"     p-label=""  (p-click)="onFiltroAvancado()" p-kind="primary"> </po-button>
-      </p>
       
-      <po-table #ttDadosIntegra
-                [p-items]="lista" 
-                [p-columns]="colunas"
-                [p-striped]="true"
-                p-sort="true"
-                [p-sort]="true"
-                [p-hide-table-search]="false"
-                [p-hide-columns-manager]="true"
-                p-container="true"
-                [p-literals]="customLiterals"
-                [p-single-select]="true"
-                [p-selectable]="true"
-                (p-selected)="changeOptions($event)"
-                [p-height]="alturaGrid"
-                [p-loading]="loadTela"
-                (p-show-more)="loadMoreItens()"
-                [p-show-more-disabled]="disableShowMore" 
-                >            
-        <ng-template p-table-cell-template let-column="column" let-row="row">
-            @if(column.property === 'opcao'){
-                <div class="menuGrid">
-                <div><button class="btn"  (click)="onAlterarGrid(row)"><p><i class="bi bi-eraser-fill"></i></p></button></div>
+        <div class="viewer">
+
+          <po-accordion #reparo p-allow-expand-all-items="true" p-show-manager-accordion="false">
+
+            <po-accordion-item #dreparo1 p-label="Dados do Reparo">
+              <form [formGroup]="formAltera" class="camporeparo">
+            
+                <div style="display: flex; justify-content: space-between;">            
+                  <po-input name="codEstabel" p-readonly="true" formControlName="codEstabel" style="width: 150px;" p-label="Estabelecimento"  ></po-input>
+                  <po-input name="codFilial"  p-readonly="true" formControlName="codFilial"  style="width: 150px;" p-label="Filial"></po-input>
+                  <po-input name="numRR"      p-readonly="true" formControlName="numRR"      style="width: 150px;" p-label="Reparo"></po-input>
+                  <po-input name="numSerieIt" p-readonly="true" formControlName="numSerieIt" style="width: 150px;" p-label="Série"></po-input>
                 </div>
-            }
-        </ng-template>
-        </po-table>
-        <p style="margin-top: 10px;"></p>
+                <div style="display: flex; gap: 10px;">            
+                  <po-input name="itCodigo" p-readonly="true" formControlName="itCodigo"      style="width: 250px;" p-label="Item"     ></po-input>
+                  <po-input name="descItem" p-readonly="true" formControlName="descItem"      style="width: 680px;" p-label="Descrição"></po-input>
+                  <po-input name="Sit"      p-readonly="true" formControlName="Sit"      style="width: 120px;" p-label="Situacao"   ></po-input>
+                </div>
+              </form>
+            </po-accordion-item>
+
+            <po-accordion-item #dreparo2 p-label="Dados Adicionais">
+              <form [formGroup]="formAltera" class="camporeparo">
+
+                <div style="display: flex; justify-content: space-between;">            
+                  <po-input name="NumOS"   p-readonly="true" formControlName="NumOS"   style="width: 150px;" p-label="NumOS"  ></po-input>
+                  <po-input name="Chamado" p-readonly="true" formControlName="Chamado" style="width: 150px;" p-label="Chamado"></po-input>
+                  <po-input name="Lab"       p-readonly="true" formControlName="Lab"      style="width: 120px;" p-label="Laboratório"></po-input>
+                </div>
+                <div style="display: flex; justify-content: space-between;">            
+                  <po-input name="DataRecebe"  p-readonly="true" formControlName="DataRecebe"      style="width: 150px;" p-label="DataRecebe" ></po-input>
+                  <po-input name="HoraRecebe"  p-readonly="true" formControlName="HoraRecebe"      style="width: 150px;" p-label="HoraRecebe" p-mask="99:99"></po-input>
+                  <po-checkbox style="margin-top: 35px; " p-readonly="true" formControlName="Bloq" name="Bloq" p-label="Bloqueado"> </po-checkbox>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">            
+                  <po-input name="DefInd"      p-readonly="true" formControlName="DefInd"      style="width: 120px;" p-label="Def.Indicativo"></po-input>
+                  <po-input name="descDefInd"  p-readonly="true" formControlName="descDefInd"  style="width: 710px;" p-label="Descrição"     ></po-input>
+                         
+                  <po-input name="nTecnico" p-readonly="true" formControlName="nTecnico"     style="width: 120px;" p-label="Num.Técnico"></po-input>
+                  <po-input name="descTec"  p-readonly="true" formControlName="descTec"      style="width: 710px;" p-label="Descrição"  ></po-input>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <po-textarea name="content" p-label="Obs" formControlName="Obs" [p-readonly]="true" class="po-md-12"> </po-textarea>
+                </div>
+
+              </form>
+            </po-accordion-item>
+
+          </po-accordion>
+        </div>
+
+        <div class="viewerRPD">          
+
+          <po-accordion #conclusao p-allow-expand-all-items="false" p-show-manager-accordion="false">
+
+            <po-accordion-item #dconclusao p-label="Dados da Conclusão">
+              <form [formGroup]="formRPD" class="camporpd">
+            
+                <div style="display: flex; gap: 10px;">
+                  <!--
+                  <po-input name="TecLab"   p-required="true"  (p-blur)="leaveCampo('TecLab')"  formControlName="TecLab"   style="width: 120px;" p-label="Técnico LAB" ></po-input>
+                  <po-input name="descTec"  p-required="false" p-readonly="true" formControlName="descTec"      style="width: 710px;" p-label="Descrição"  ></po-input>
+                  -->
+                  <po-lookup
+                            name="TecLab"
+                            formControlName="TecLab"                            
+                            
+                            p-label="TecLab"
+                            
+                            style="width: 800px;"
+                            [p-field-format]="['codEmitente', 'nomeAbrev']"
+                            [p-filter-service]="TecLabService"                    
+                            [p-literals]="{ 'modalTitle': 'Zoom de Técnicos' }"
+                          >
+                  </po-lookup>
+
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <po-datepicker class="po-md-4" p-required="true" style="width: 190px;" p-mask="99/99/9999" [(ngModel)]="dtAtual" name="DtIniRep" p-label="Data Ini Rep" formControlName="DtIniRep"></po-datepicker>
+                  
+                  <po-input name="HrIniRep" p-required="true"  formControlName="HrIniRep" style="width: 120px;" [(ngModel)]="hrAtual" p-label="Hora Ini Rep"></po-input>
+                  <po-input name="HrFimRep" p-required="true"  formControlName="HrFimRep" style="width: 120px;" [(ngModel)]="hrFim" p-label="Hora Fim Rep"></po-input>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <po-input name="DefC"    p-required="true"  (p-blur)="leaveCampo('DefC')"  formControlName="DefC"      style="width: 120px;" p-label="Def.Const"></po-input>
+                  <po-input name="descDef" p-required="false" p-readonly="true" formControlName="descDef"      style="width: 710px;" p-label="Descrição"  ></po-input>
+                
+                  <po-input name="Causa"     p-required="true" (p-blur)="leaveCampo('Causa')" formControlName="Causa"      style="width: 120px;" p-label="Causa"        ></po-input>
+                  <po-input name="descCausa" p-required="false" p-readonly="true" formControlName="descCausa"      style="width: 710px;" p-label="Descrição"  ></po-input>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <po-input name="Sol1"  p-required="true" (p-blur)="leaveCampo('Sol1')" formControlName="Sol1"      style="width: 120px;" p-label="Solução1"     ></po-input>
+                  <po-input name="descSol1"  p-readonly="true" formControlName="descSol1"      style="width: 710px;" p-label="Descrição"  ></po-input>
+                
+                  <po-input name="Sol2" p-required="true" (p-blur)="leaveCampo('Sol2')" formControlName="Sol2"      style="width: 120px;" p-label="Solução2"     ></po-input>
+                  <po-input name="descSol2" p-required="false" p-readonly="true" formControlName="descSol2"      style="width: 710px;" p-label="Descrição"  ></po-input>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <po-input name="Alimentador" p-required="false" (p-blur)="leaveCampo('Alimentador')" formControlName="Alimentador"      style="width: 120px;" p-label="Alimentador"  ></po-input>
+                  <po-input name="descAli" p-required="false" p-readonly="true" formControlName="descAli"      style="width: 710px;" p-label="Descrição"  ></po-input>
+                </div>
+              <po-table #ttDadosRPD
+                      [p-items]="listaItens" 
+                      [p-columns]="colunasItens"
+                      [p-striped]="true" 
+                      p-sort="true"
+                      [p-sort]="true"
+                      [p-hide-table-search]="true" 
+                      [p-hide-columns-manager]="true" 
+                      p-container="true"
+                      [p-single-select]="true"
+                      [p-selectable]="false"
+                      [p-literals]="customLiterals"
+                      [p-height]="alturaGridRPD" 
+                      [p-loading]="loadDadosItens">
+              </po-table>
+              </form>
+
+            </po-accordion-item>
+
+          </po-accordion>
         
+        </div>
+
   </div>
+  
+  <po-accordion #rpd p-allow-expand-all-items="false" p-show-manager-accordion="false">
+    <po-accordion-item p-label="RPD" #drpd>
+      <div class="grid">
+          <!--<po-loading-overlay *ngIf="loadTela===true" [p-text]="labelLoadTela" [p-screen-lock]="true"></po-loading-overlay>-->
+          <!--<p style="font-size: 20px; font-weight: bold"><po-divider p-label="DADOS IMPORTADOS DO ARQUIVO"></po-divider></p>
+          <p style="font-size: 15px; font-weight: bold; margin-bottom: -40px;">Total de Registros: {{this.total}}</p>
+          <p style="font-size: 15px; display: flex; justify-content: flex-end; margin-right: 260px; margin-bottom: -52px;">
+            
+            <po-button  p-tooltip="Pesquisa Avançada"  p-icon="bi bi-funnel"     p-label=""  (p-click)="onFiltroAvancado()" p-kind="primary"> </po-button>
+          </p>-->
+          
+          <po-table #ttDadosConc
+                    [p-items]="lista" 
+                    [p-columns]="colunas"
+                    [p-striped]="true"
+                    p-sort="true"
+                    [p-sort]="true"
+                    [p-hide-table-search]="true"
+                    [p-hide-columns-manager]="true"
+                    p-container="true"
+                    [p-literals]="customLiterals"
+                    [p-single-select]="true"
+                    [p-selectable]="false"
+                    (p-selected)="changeOptions($event)"
+                    [p-height]="alturaGrid"
+                    [p-loading]="loadTela"
+                    
+                    >            
+            <ng-template p-table-cell-template let-column="column" let-row="row">
+                @if(column.property === 'opcao'){
+                    <div class="menuGrid">
+                    <div><button class="btn"  (click)="onAlterarGrid(row)"><p><i class="bi bi-eraser-fill"></i></p></button></div>
+                    </div>
+                }
+            </ng-template>
+            </po-table>
+            <p style="margin-top: 10px;"></p>
+            
+      </div>
+      </po-accordion-item>
+  
+  </po-accordion>
 
   <po-modal #telaAltera p-title="Altere os Dados do Item"
                               p-size="auto" 
